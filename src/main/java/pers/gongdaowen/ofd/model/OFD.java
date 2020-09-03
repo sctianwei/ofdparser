@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.HashMap;
 import java.util.Map;
 
-@XmlRootElement(namespace = "http://www.ofdspec.org/2016", name = "OFD")
+@XmlRootElement(name = "OFD")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class OFD {
 

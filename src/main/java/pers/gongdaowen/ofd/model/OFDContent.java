@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@XmlRootElement(namespace = "http://www.ofdspec.org/2016", name = "Page")
+@XmlRootElement(name = "Page")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class OFDContent {
 

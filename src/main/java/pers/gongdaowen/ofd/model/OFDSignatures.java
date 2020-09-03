@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 
-@XmlRootElement(namespace = "http://www.ofdspec.org/2016", name = "Signatures")
+@XmlRootElement(name = "Signatures")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class OFDSignatures {
 
@@ -24,7 +24,7 @@ public class OFDSignatures {
         public Signature $Signature;
     }
 
-    @XmlRootElement(namespace = "http://www.ofdspec.org/2016", name = "Signature")
+    @XmlRootElement(name = "Signature")
     @XmlAccessorType(XmlAccessType.FIELD)
     public static class Signature {
         public SignedInfo SignedInfo;

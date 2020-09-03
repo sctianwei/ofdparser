@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@XmlRootElement(namespace = "http://www.ofdspec.org/2016", name = "Annotations")
+@XmlRootElement(name = "Annotations")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class OFDAnnotations {
 
@@ -20,7 +20,7 @@ public class OFDAnnotations {
         public PageAnnot PageAnnot = new PageAnnot();
     }
 
-    @XmlRootElement(namespace = "http://www.ofdspec.org/2016", name = "PageAnnot")
+    @XmlRootElement(name = "PageAnnot")
     @XmlAccessorType(XmlAccessType.FIELD)
     public static class PageAnnot {
         public List<Annot> Annot = new ArrayList<>();

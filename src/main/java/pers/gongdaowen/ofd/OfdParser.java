@@ -118,6 +118,10 @@ public class OfdParser {
                         }
                         // 签章信息
                         OFDSignatures.Seal seal = signature.SignedInfo.Seal;
+                        if(BeanUtils.isEmpty(seal) && BeanUtils.isNotEmpty(signature.SignedValue)) {
+                        	seal = signature.SignedInfo.Seal = new OFDSignatures.Seal();
+                        	seal.BaseLoc = signature.SignedValue;
+                        }
                         if (BeanUtils.isNotEmpty(seal)) {
                             seal.$FileData = zipFile.getBytes(seal.BaseLoc);
                             File tmpFile = File.createTempFile("ofd-", ".esl");

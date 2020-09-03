@@ -1,9 +1,9 @@
 package pers.gongdaowen.ofd;
 
-import pers.gongdaowen.ofd.model.*;
 import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.digests.SM3Digest;
 import sun.awt.image.BufferedImageGraphicsConfig;
+import pers.gongdaowen.ofd.model.*;
 import pers.gongdaowen.ofd.utils.Base64Utils;
 import pers.gongdaowen.ofd.utils.BeanUtils;
 import pers.gongdaowen.ofd.utils.OfdUtils;
@@ -206,7 +206,7 @@ public class OFDInfo {
                                 graphics.setColor(castColor(obj.StrokeColor.Value));
                             }
                             if (obj.LineWidth != null) {
-                                graphics.setStroke(new BasicStroke((float) (obj.LineWidth * dpi)));
+                                graphics.setStroke(new BasicStroke((float) (obj.LineWidth * 0.353 * dpi)));
                             } else {
                                 graphics.setStroke(new BasicStroke((float) (0.353 * dpi)));
                             }
