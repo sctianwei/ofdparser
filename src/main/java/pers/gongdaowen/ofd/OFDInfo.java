@@ -10,6 +10,7 @@ import pers.gongdaowen.ofd.utils.OfdUtils;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -119,7 +120,7 @@ public class OFDInfo {
         // 1. 画页面
         for (OFDDocument.Page page : ofd.DocBody.$OFDDocument.Pages.Page) {
             // 画页面
-            BufferedImage image = drawPage(ofd, page, _dpi, false);
+            BufferedImage image = drawPage(ofd, page, _dpi, false, false);
             // 添加到集合中
             pageImageList.add(image);
         }
@@ -130,7 +131,7 @@ public class OFDInfo {
                 if (sInfo != null) {
                     OFDDocument.Page sealPage = sInfo.Seal.$OFD.DocBody.$OFDDocument.Pages.Page.get(0);
                     // 画签章
-                    BufferedImage sealImg = this.drawPage(sInfo.Seal.$OFD, sealPage, _dpi, true);
+                    BufferedImage sealImg = this.drawPage(sInfo.Seal.$OFD, sealPage, _dpi, true, true);
                     // 获取章的页码
                     int pageRef = Integer.valueOf(sInfo.StampAnnot.PageRef);
                     // 获取页面对应的图像
@@ -146,7 +147,7 @@ public class OFDInfo {
         return pageImageList;
     }
 
-    private BufferedImage drawPage(OFD ofd, OFDDocument.Page page, double dpi, boolean isTransparency) {
+    private BufferedImage drawPage(OFD ofd, OFDDocument.Page page, double dpi, boolean isTransparency, boolean isSealPage) {
         try {
             // 文档默认区域大小
             String pageArea = ofd.DocBody.$OFDDocument.CommonData.PageArea.PhysicalBox;
@@ -206,12 +207,13 @@ public class OFDInfo {
                                 graphics.setColor(castColor(obj.StrokeColor.Value));
                             }
                             if (obj.LineWidth != null) {
-                                graphics.setStroke(new BasicStroke((float) (obj.LineWidth * 0.353 * dpi)));
+                                graphics.setStroke(new BasicStroke((float) (obj.LineWidth * dpi)));
+                                if (isSealPage && BeanUtils.isEmpty(obj.CTM))graphics.translate(0.2*dpi, 0.2*dpi);
                             } else {
                                 graphics.setStroke(new BasicStroke((float) (0.353 * dpi)));
                             }
                             // 画
-                            this.drawObject(graphics, obj.AbbreviatedData, dpi);
+                            this.drawObject(graphics, obj.AbbreviatedData, dpi,BeanUtils.isEmpty(obj.CTM));
                         }
                         graphics.dispose();
                     } else if (drawObj instanceof OFDContent.TextObject) {
@@ -342,7 +344,7 @@ public class OFDInfo {
         return new Color(colorInts[0], colorInts[1], colorInts[2]);
     }
 
-    private void drawObject(Graphics g, String abbreviatedData, double dpi) {
+    private void drawObject(Graphics2D g, String abbreviatedData, double dpi, boolean transform) {
         Point2D.Double sPoint = null, mPoint = null;
         String[] parts = abbreviatedData.split(" (?=[SMLQBAC])");
         for (String part : parts) {
@@ -374,7 +376,7 @@ public class OFDInfo {
                             new Point.Double((Double.valueOf(temps[3])) * dpi, (Double.valueOf(temps[4])) * dpi), //终点
                     };
                     // 贝塞尔曲线
-                    drawBezier(g, points);
+                    drawBezier(g, points,transform);
                     // 重新设置当前点
                     mPoint = points[2];
                     break;
@@ -387,7 +389,7 @@ public class OFDInfo {
                             new Point.Double((Double.valueOf(temps[5])) * dpi, (Double.valueOf(temps[6])) * dpi), //终点
                     };
                     // 贝塞尔曲线
-                    drawBezier(g, points);
+                    drawBezier(g, points,transform);
                     // 重新设置当前点
                     mPoint = points[3];
                     break;
@@ -403,7 +405,23 @@ public class OFDInfo {
         }
     }
 
-    private void drawBezier(Graphics g, Point2D.Double[] points) {
+    private void drawBezier(Graphics2D g, Point2D.Double[] points,boolean transform) {
+    	double delta = 0d;
+    	if(transform) {
+    		BasicStroke stroke = (BasicStroke)g.getStroke();
+        	delta = stroke.getLineWidth()/2.0;
+    	}
+        GeneralPath path = new GeneralPath();
+        if(points.length == 3) {
+        	path.moveTo(points[0].x-delta, points[0].y-delta);
+            path.quadTo(points[1].x-delta, points[1].y-delta, points[2].x-delta, points[2].y-delta);
+            g.draw(path);
+        }else if(points.length == 4) {
+            path.moveTo(points[0].x-delta, points[0].y-delta);
+            path.curveTo(points[1].x-delta, points[1].y-delta, points[2].x-delta, points[2].y-delta, points[3].x-delta, points[3].y-delta);
+            g.draw(path);
+        }
+        /*
         int n = points.length - 1;
         // u的步长决定了曲线点的精度
         for (float u = 0; u <= 1; u += 0.0001) {
@@ -420,5 +438,7 @@ public class OFDInfo {
             }
             g.drawOval((int) p[0].x, (int) p[0].y, 1, 1);
         }
+        */
+        
     }
 }
