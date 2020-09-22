@@ -85,16 +85,16 @@ public class OFDInfo {
         }
     }
     public void convertAsPDF(String path) throws Exception {
-    	List<BufferedImage> images = convertAsImages(125);
+    	List<BufferedImage> images = convertAsImages();
     	if(images!=null && images.size()>0) {
     		PDDocument document = new PDDocument();
         	for (BufferedImage bufferedImage : images) {
                 //设置PDF页大小
-        		PDPage page = new PDPage(new PDRectangle(bufferedImage.getWidth(), bufferedImage.getHeight()));
+        		PDPage page = new PDPage(new PDRectangle(bufferedImage.getWidth() / 150f * 72,bufferedImage.getHeight() / 150f * 72));
         		document.addPage(page);
         		PDImageXObject pdImage = LosslessFactory.createFromImage(document, bufferedImage);
         		PDPageContentStream contentStream = new PDPageContentStream(document, page);
-        		contentStream.drawImage(pdImage, 0, 0);
+        		contentStream.drawImage(pdImage, 0, 0,pdImage.getWidth() / 150f * 72,pdImage.getHeight() / 150f * 72);
         		contentStream.close();
     		}
         	document.save(path);
