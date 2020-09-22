@@ -1,11 +1,13 @@
 package pers.gongdaowen.ofd;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.digests.SM3Digest;
-
-import com.lowagie.text.Document;
-import com.lowagie.text.pdf.PdfWriter;
-
 import sun.awt.image.BufferedImageGraphicsConfig;
 import pers.gongdaowen.ofd.model.*;
 import pers.gongdaowen.ofd.utils.Base64Utils;
@@ -18,14 +20,10 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.imageio.ImageIO;
 
 public class OFDInfo {
 
@@ -86,23 +84,20 @@ public class OFDInfo {
             return null;
         }
     }
-
     public void convertAsPDF(String path) throws Exception {
     	List<BufferedImage> images = convertAsImages();
     	if(images!=null && images.size()>0) {
-    		Document document = new Document();
-    		PdfWriter.getInstance(document, new FileOutputStream(path));
-    		document.open();
-            document.setMargins(0, 20f, 0, 0);
+    		PDDocument document = new PDDocument();
         	for (BufferedImage bufferedImage : images) {
                 //设置PDF页大小
-                document.setPageSize(new com.lowagie.text.Rectangle(bufferedImage.getWidth(), bufferedImage.getHeight()));
-                document.newPage();
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                ImageIO.write(bufferedImage, "JPG", baos);
-                com.lowagie.text.Image iTextImage = com.lowagie.text.Image.getInstance(baos.toByteArray());
-                document.add(iTextImage);
+        		PDPage page = new PDPage(new PDRectangle(bufferedImage.getWidth(), bufferedImage.getHeight()));
+        		document.addPage(page);
+        		PDImageXObject pdImage = LosslessFactory.createFromImage(document, bufferedImage);
+        		PDPageContentStream contentStream = new PDPageContentStream(document, page);
+        		contentStream.drawImage(pdImage, 0, 0);
+        		contentStream.close();
     		}
+        	document.save(path);
         	document.close();
     	}
     }

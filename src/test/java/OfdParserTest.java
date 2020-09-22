@@ -21,7 +21,7 @@ public class OfdParserTest {
     
     @Test
     public void convertAsPDFTest() throws Exception {
-        OFDInfo ofd = OfdParser.parse(new File("src/test/resources/百望云增值税发票.ofd"));
-        ofd.convertAsPDF("src/test/resources/百望云增值税发票.ofd.jpg.pdf");
+        OFDInfo ofd = OfdParser.parse(new File("src/test/resources/西门子（中国）有限公司广州分公司.ofd"));
+        ofd.convertAsPDF("src/test/resources/西门子（中国）有限公司广州分公司.ofd.jpg.pdf");
     }
 }
