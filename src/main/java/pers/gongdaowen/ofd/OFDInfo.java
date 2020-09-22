@@ -85,7 +85,7 @@ public class OFDInfo {
         }
     }
     public void convertAsPDF(String path) throws Exception {
-    	List<BufferedImage> images = convertAsImages();
+    	List<BufferedImage> images = convertAsImages(125);
     	if(images!=null && images.size()>0) {
     		PDDocument document = new PDDocument();
         	for (BufferedImage bufferedImage : images) {
