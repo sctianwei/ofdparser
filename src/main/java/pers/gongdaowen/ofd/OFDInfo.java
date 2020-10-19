@@ -174,7 +174,7 @@ public class OFDInfo {
             // 文档默认区域大小
             String pageArea = ofd.DocBody.$OFDDocument.CommonData.PageArea.PhysicalBox;
             // 计算宽度和高度
-            String[] parts = BeanUtils.emptyFilter(page.$OFDContent.Area.PhysicalBox, pageArea).split(" ");
+            String[] parts = BeanUtils.emptyFilter(page.$OFDContent.Area==null?null:page.$OFDContent.Area.PhysicalBox, pageArea).split(" ");
             int width = (int) (dpi * Integer.valueOf(parts[2]));
             int height = (int) (dpi * Integer.valueOf(parts[3]));
 

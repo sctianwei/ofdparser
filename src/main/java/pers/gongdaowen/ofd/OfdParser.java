@@ -34,9 +34,43 @@ public class OfdParser {
             OFDDocument ofdDoc = ofd.DocBody.$OFDDocument = OfdUtils.xmlToObject(zipFile.getStream(ofd.DocBody.DocRoot), OFDDocument.class);
             if (BeanUtils.isNotEmpty(ofdDoc.CommonData)) {
                 // 公共资源
-                String res = BeanUtils.emptyFilter(ofdDoc.CommonData.DocumentRes, ofdDoc.CommonData.PublicRes);
-                if (BeanUtils.isNotEmpty(res)) {
-                    OFDDocumentRes ofdRes = ofdDoc.CommonData.$OFDDocumentRes = OfdUtils.xmlToObject(zipFile.getStream(res), OFDDocumentRes.class);
+                String pubRes = ofdDoc.CommonData.PublicRes;
+                if (BeanUtils.isNotEmpty(pubRes)) {
+                    OFDDocumentRes ofdRes = ofdDoc.CommonData.$OFDDocumentRes = OfdUtils.xmlToObject(zipFile.getStream(pubRes), OFDDocumentRes.class);
+                    // 图片等信息读取字节数组
+                    if (BeanUtils.isNotEmpty(ofdRes.MultiMedias)) {
+                        for (OFDDocumentRes.MultiMedia media : ofdRes.MultiMedias.MultiMedia) {
+                            String baseLoc = "";
+                            if (BeanUtils.isNotEmpty(ofdRes.BaseLoc)) {
+                                baseLoc = ofdRes.BaseLoc + "/";
+                            }
+                            media.$FileData = zipFile.getBytes(baseLoc + media.MediaFile);
+                            ofd.ObjectMap.put(media.ID, media);
+                        }
+                    }
+                    // 颜色
+                    if (BeanUtils.isNotEmpty(ofdRes.ColorSpaces)) {
+                        for (OFDDocumentRes.ColorSpace color : ofdRes.ColorSpaces.ColorSpace) {
+                            ofd.ObjectMap.put(color.ID, color);
+                        }
+                    }
+                    // 字体
+                    if (BeanUtils.isNotEmpty(ofdRes.Fonts)) {
+                        for (OFDDocumentRes.Font font : ofdRes.Fonts.Font) {
+                            ofd.ObjectMap.put(font.ID, font);
+                        }
+                    }
+                    // 画布参数
+                    if (BeanUtils.isNotEmpty(ofdRes.DrawParams)) {
+                        for (OFDDocumentRes.DrawParam drawParam : ofdRes.DrawParams.DrawParam) {
+                            ofd.ObjectMap.put(drawParam.ID, drawParam);
+                        }
+                    }
+                }
+                //页面资源
+                String docRes = ofdDoc.CommonData.DocumentRes;
+                if (BeanUtils.isNotEmpty(docRes)) {
+                    OFDDocumentRes ofdRes = ofdDoc.CommonData.$OFDDocumentRes = OfdUtils.xmlToObject(zipFile.getStream(docRes), OFDDocumentRes.class);
                     // 图片等信息读取字节数组
                     if (BeanUtils.isNotEmpty(ofdRes.MultiMedias)) {
                         for (OFDDocumentRes.MultiMedia media : ofdRes.MultiMedias.MultiMedia) {
